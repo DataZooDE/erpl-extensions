@@ -1,0 +1,55 @@
+name: Release
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build wheel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install duckdb==1.5.5 build wheel
+
+      - name: Build wheel
+        run: ./bin/build-wheel.sh
+
+      - name: Smoke test wheel
+        run: |
+          pip install dist/*.whl
+          python -c "import erpl_extensions; assert erpl_extensions.is_populated(), 'not populated'; print('populated:', erpl_extensions.is_populated())"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pypi-wheels
+          path: dist/*.whl
+
+  pypi-publish:
+    name: Publish to PyPI
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/erpl-extensions
+    permissions:
+      id-token: write        # Trusted Publishing: no API token to store or rotate
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: pypi-wheels
+          path: dist
+      - uses: pypa/gh-action-pypi-publish@release/v1

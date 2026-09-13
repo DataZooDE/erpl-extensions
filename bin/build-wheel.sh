@@ -8,7 +8,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 PAYLOAD="src/erpl_extensions/_files"
-FETCH="${FETCH_EXTENSIONS:-../../source-sap/bin/fetch-extensions.sh}"
+FETCH="${FETCH_EXTENSIONS:-bin/fetch-extensions.sh}"
 
 if [ ! -x "$FETCH" ] && [ ! -f "$FETCH" ]; then
     echo "cannot find fetch-extensions.sh at $FETCH" >&2

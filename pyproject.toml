@@ -22,7 +22,7 @@ dependencies = []
 
 [project.urls]
 Homepage = "https://erpl.io"
-Repository = "https://github.com/DataZooDE/erpl-airbyte"
+Repository = "https://github.com/DataZooDE/erpl-extensions"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/erpl_extensions"]
